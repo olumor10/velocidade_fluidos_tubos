@@ -233,6 +233,26 @@
                 left: 100%;
             }
         }
+
+        @media (max-width: 768px) {
+            body {
+                zoom: 100%;
+            }
+
+            .form-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .form-container form,
+            .form-container #results {
+                width: 90%;
+            }
+
+            .button-container {
+                margin-top: 20px;
+            }
+        }
     </style>
 </head>
 
