@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Velocidade e Taxa de fluxo em Tubulações</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Londrina+Shadow&family=Londrina+Solid:wght@100;300;400;900&display=swap"
+        rel="stylesheet">
+    <link rel="icon" href="img/tubulacao-de-gas.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 20px;
+            background: #007bff;
+            color: white;
+            margin: 0;
+            position: relative;
+            overflow: hidden;
+            font-family: "Jersey 10", serif;
+            font-weight: 600;
+            font-style: normal;
+            font-size: 40px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        h1::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/wavecut.png') repeat;
+            background-size: 200% 100%;
+            animation: wave 8s linear infinite;
+            opacity: 0.9;
+        }
+
+        @keyframes wave {
+            0% {
+                background-position: 0 0;
+            }
+
+            100% {
+                background-position: 100% 0;
+            }
+        }
+
+        h2 {
+            color: #007bff;
+        }
+
+        .form-container {
+            display: flex;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 20px auto;
+            gap: 20px;
+            /* Adiciona espaço entre as forms */
+        }
+
+        .form-container form,
+        .form-container #results {
+            width: 48%;
+            max-width: 600px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.5);
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        form input {
+            width: 95%;
+            padding: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        form button {
+            width: 100%;
+            padding: 10px;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        form button:hover {
+            background: #0056b3;
+        }
+
+        .btn-calculate {
+            background: #007bff;
+        }
+
+        .btn-clear {
+            background: #ff0000;
+            margin-top: 10px;
+        }
+
+        .btn-clear:hover {
+            background: #cc0000;
+        }
+
+        #results h2 {
+            color: #007bff;
+        }
+
+        #results p {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .result-value {
+            display: inline-block;
+            padding: 8px;
+            margin: 4px 0;
+            background: #e9ecef;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 95%;
+            text-align: center;
+            height: 20px;
+            /* Altura fixa */
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 150px;
+        }
+
+        .pipe-container {
+            position: relative;
+            width: 90%;
+            height: 40px;
+            background: #ccc;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 50px auto;
+            border: 10px solid #999;
+        }
+
+        .pipe-joint {
+            position: absolute;
+            top: -10px;
+            width: 20px;
+            height: 60px;
+            background: #999;
+            border-radius: 5px;
+            z-index: 1;
+        }
+
+        .pipe-joint::before,
+        .pipe-joint::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #666;
+            border-radius: 50%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .pipe-joint::before {
+            top: 10px;
+        }
+
+        .pipe-joint::after {
+            bottom: 10px;
+        }
+
+        .pipe-joint:nth-child(1) {
+            left: 33%;
+        }
+
+        .pipe-joint:nth-child(2) {
+            left: 66%;
+        }
+
+        .fluid {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(90deg,
+                    #007bff,
+                    #007bff 10px,
+                    #00bfff 10px,
+                    #00bfff 20px);
+            border-radius: 25px;
+            z-index: 0;
+        }
+
+        .flow {
+            animation: flow 5s linear infinite;
+        }
+
+        @keyframes flow {
+            0% {
+                left: -100%;
+            }
+
+            100% {
+                left: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Simulador de Velocidade e Taxa de Fluxo em Tubulações</h1>
+    <div class="form-container">
+        <form id="fluidForm">
+            <h2 style="text-align: center;"> Dados do Protótipo</h2>
+            <label for="diametroPrototipo">Diâmetro do tubo (m):</label>
+            <input type="number" id="diametroPrototipo" step="0.01" required>
+
+            <label for="gravidadeEspecifica">Gravidade Específica do Fluido:</label>
+            <input type="number" id="gravidadeEspecifica" step="0.01" required>
+
+            <label for="viscosidadeFluido">Viscosidade do Fluido (poise):</label>
+            <input type="number" id="viscosidadeFluido" step="0.01" required>
+
+            <label for="taxaFluxo">Taxa de Fluxo (litros/s):</label>
+            <input type="number" id="taxaFluxo" step="0.01" required>
+        </form>
+        <form id="modelForm">
+            <h2 style="text-align: center;">Dados do Modelo</h2>
+            <label for="diametroModelo">Diâmetro do Tubo (m):</label>
+            <input type="number" id="diametroModelo" step="0.01" required>
+            <p>* A água é o fluido usado no modelo.</p>
+            <div class="button-container">
+                <button type="button" class="btn-calculate" onclick="calcular()">Calcular</button>
+                <button type="button" class="btn-clear" onclick="limpar()">Limpar</button>
+            </div>
+        </form>
+        <div id="results">
+            <h2 style="text-align: center;"> Resultados</h2>
+            <p>Velocidade do fluido no Protótipo (m/s):</p>
+            <div id="velocidadePrototipo" class="result-value"></div>
+            <p>Velocidade do fluido no Modelo (m/s):</p>
+            <div id="velocidadeModelo" class="result-value"></div>
+            <p>Taxa de Fluxo no Modelo (litros/s):</p>
+            <div id="taxaFluxoModeloLitros" class="result-value"></div>
+        </div>
+    </div>
+
+    <div class="pipe-container">
+        <div class="pipe-joint"></div>
+        <div class="pipe-joint"></div>
+        <div class="fluid" id="fluidAnimation"></div>
+    </div>
+
+    <script>
+        function calcular() {
+            // Protótipo
+            const diametroPrototipo = parseFloat(document.getElementById('diametroPrototipo').value);
+            const gravidadeEspecifica = parseFloat(document.getElementById('gravidadeEspecifica').value);
+            const viscosidadeFluido = parseFloat(document.getElementById('viscosidadeFluido').value);
+            const taxaFluxo = parseFloat(document.getElementById('taxaFluxo').value);
+
+            // Modelo
+            const diametroModelo = parseFloat(document.getElementById('diametroModelo').value);
+
+            // Verificação de campos vazios
+            if (isNaN(diametroPrototipo) || isNaN(gravidadeEspecifica) || isNaN(viscosidadeFluido) || isNaN(taxaFluxo) || isNaN(diametroModelo)) {
+                alert('Por favor, preencha todos os campos.');
+                return;
+            }
+
+            // Constantes
+            const densidadeOleo = gravidadeEspecifica * 1000; // kg/m³
+            const densidadeAgua = 1000; // kg/m³
+            const viscosidadeAgua = 0.01; // poise
+
+            // Cálculos
+            const velocidadePrototipo = (taxaFluxo / 1000) / ((Math.PI / 4) * Math.pow(diametroPrototipo, 2)); // m/s
+            const velocidadeModelo = (densidadeOleo * velocidadePrototipo * diametroPrototipo * viscosidadeAgua) /
+                (densidadeAgua * diametroModelo * viscosidadeFluido);
+            const areaSecaoModelo = (Math.PI / 4) * Math.pow(diametroModelo, 2);
+            const taxaFluxoModelo = velocidadeModelo * areaSecaoModelo; // m³/s
+
+            // Exibindo os resultados
+            document.getElementById('velocidadePrototipo').textContent = velocidadePrototipo.toFixed(4);
+            document.getElementById('velocidadeModelo').textContent = velocidadeModelo.toFixed(4);
+            document.getElementById('taxaFluxoModeloLitros').textContent = (taxaFluxoModelo * 1000).toFixed(4);
+
+            // Tornar os resultados visíveis
+            document.querySelectorAll('.result-value').forEach(element => {
+                element.style.display = 'inline-block';
+            });
+
+            // Ajustar a velocidade da animação do fluido
+            const fluidAnimation = document.getElementById('fluidAnimation');
+            const animationDuration = 5 / velocidadeModelo; // Ajustar a duração da animação com base na velocidade do modelo
+            fluidAnimation.style.animationDuration = `${animationDuration}s`;
+            fluidAnimation.classList.add('flow');
+        }
+
+        function limpar() {
+            document.getElementById('fluidForm').reset();
+            document.getElementById('modelForm').reset();
+            document.querySelectorAll('.result-value').forEach(element => {
+                element.textContent = '';
+                element.style.display = 'inline-block';
+            });
+            document.getElementById('fluidAnimation').classList.remove('flow');
+        }
+    </script>
+</body>
+
+</html>
