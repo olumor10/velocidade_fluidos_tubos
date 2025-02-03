@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador de Velocidade e Taxa de fluxo em Tubulações</title>
+    <title>Análise Dimensional e Semelhança</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -253,31 +253,133 @@
                 margin-top: 20px;
             }
         }
+
+        .plane-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            margin: 50px auto;
+            overflow: hidden;
+            display: none;
+        }
+
+        .plane {
+            position: absolute;
+            width: 200px;
+            height: 100px;
+            background: url('img/aviao_3.png') no-repeat center center;
+            background-size: contain;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .cloud {
+            position: absolute;
+            width: 100px;
+            height: 50px;
+            background: url('img/nuvem.png') no-repeat center center;
+            background-size: contain;
+        }
+
+        .cloud:nth-child(2) {
+            top: 10%;
+            animation-delay: 1s;
+        }
+
+        .cloud:nth-child(3) {
+            top: 50%;
+            animation-delay: 0.8s;
+
+        }
+
+        .cloud:nth-child(4) {
+            top: 70%;
+            animation-delay: 0.3s;
+        }
+
+        .cloud:nth-child(5) {
+            top: 30%;
+        }
+
+        .fly {
+            animation: fly 3s linear infinite;
+        }
+
+        .stream {
+            animation: stream 5s linear infinite;
+        }
+
+        @keyframes fly {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) translateY(-5px);
+            }
+
+            50% {
+                transform: translate(-50%, -50%) translateY(5px);
+            }
+        }
+
+        @keyframes stream {
+            0% {
+                left: -100%;
+            }
+
+            100% {
+                left: 100%;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <h1>Simulador de Velocidade e Taxa de Fluxo em Tubulações</h1>
+    <h1>Análise Dimensional e Semelhança</h1>
+    <div style="text-align: center; margin: 20px 0;">
+        <label for="tipoAnalise" style="font-size: 18px; font-weight: bold;">Tipo de Análise:</label>
+        <select id="tipoAnalise" onchange="toggleFields()" style="font-size: 16px; padding: 5px; margin-left: 10px;">
+            <option value="1">Velocidade de fluidos em tubulações</option>
+            <option value="2">Pressão em Aeronaves</option>
+        </select>
+    </div>
     <div class="form-container">
         <form id="fluidForm">
             <h2 style="text-align: center;"> Dados do Protótipo</h2>
-            <label for="diametroPrototipo">Diâmetro do tubo (m):</label>
-            <input type="number" id="diametroPrototipo" step="0.01" required>
+            <div id="analise1">
+                <label for="diametroPrototipo">Diâmetro do tubo (m):</label>
+                <input type="number" id="diametroPrototipo" step="0.01" required>
 
-            <label for="gravidadeEspecifica">Gravidade Específica do Fluido:</label>
-            <input type="number" id="gravidadeEspecifica" step="0.01" required>
+                <label for="gravidadeEspecifica">Gravidade Específica do Fluido:</label>
+                <input type="number" id="gravidadeEspecifica" step="0.01" required>
 
-            <label for="viscosidadeFluido">Viscosidade do Fluido (poise):</label>
-            <input type="number" id="viscosidadeFluido" step="0.01" required>
+                <label for="viscosidadeFluido">Viscosidade do Fluido (poise):</label>
+                <input type="number" id="viscosidadeFluido" step="0.01" required>
 
-            <label for="taxaFluxo">Taxa de Fluxo (litros/s):</label>
-            <input type="number" id="taxaFluxo" step="0.01" required>
+                <label for="taxaFluxo">Taxa de Fluxo (litros/s):</label>
+                <input type="number" id="taxaFluxo" step="0.01" required>
+            </div>
+            <div id="analise2" style="display: none;">
+                <label for="viscosidadePrototipo">Viscosidade do fluido (poise):</label>
+                <input type="number" id="viscosidadePrototipo" step="0.01" required>
+                <label for="densidadePrototipo">Densidade do fluido (kg/m³):</label>
+                <input type="number" id="densidadePrototipo" step="0.01" required>
+                <label for="razaoEscala">Razão de Escala:</label>
+                <input type="number" id="razaoEscala" step="0.01" required>
+            </div>
         </form>
         <form id="modelForm">
             <h2 style="text-align: center;">Dados do Modelo</h2>
-            <label for="diametroModelo">Diâmetro do Tubo (m):</label>
-            <input type="number" id="diametroModelo" step="0.01" required>
-            <p>* A água é o fluido usado no modelo.</p>
+            <div id="modeloAnalise1">
+                <label for="diametroModelo">Diâmetro do Tubo (m):</label>
+                <input type="number" id="diametroModelo" step="0.01" required>
+                <p>* A água é o fluido usado no modelo.</p>
+            </div>
+            <div id="modeloAnalise2" style="display: none;">
+                <label for="quedaPressaoModelo">Queda de Pressão do Modelo (N/cm²):</label>
+                <input type="number" id="quedaPressaoModelo" step="0.01" required>
+                <p>* A água é o fluido usado no modelo.</p>
+            </div>
             <div class="button-container">
                 <button type="button" class="btn-calculate" onclick="calcular()">Calcular</button>
                 <button type="button" class="btn-clear" onclick="limpar()">Limpar</button>
@@ -285,65 +387,149 @@
         </form>
         <div id="results">
             <h2 style="text-align: center;"> Resultados</h2>
-            <p>Velocidade do fluido no Protótipo (m/s):</p>
-            <div id="velocidadePrototipo" class="result-value"></div>
-            <p>Velocidade do fluido no Modelo (m/s):</p>
-            <div id="velocidadeModelo" class="result-value"></div>
-            <p>Taxa de Fluxo no Modelo (litros/s):</p>
-            <div id="taxaFluxoModeloLitros" class="result-value"></div>
+            <div id="resultadosAnalise1">
+                <p>Velocidade do fluido no Protótipo (m/s):</p>
+                <div id="velocidadePrototipo" class="result-value"></div>
+                <p>Velocidade do fluido no Modelo (m/s):</p>
+                <div id="velocidadeModelo" class="result-value"></div>
+                <p>Taxa de Fluxo no Modelo (litros/s):</p>
+                <div id="taxaFluxoModeloLitros" class="result-value"></div>
+            </div>
+            <div id="resultadosAnalise2" style="display: none;">
+                <p>Queda de Pressão no Protótipo (N/cm²):</p>
+                <div id="quedaPressaoPrototipo" class="result-value"></div>
+            </div>
         </div>
     </div>
 
-    <div class="pipe-container">
+    <div class="pipe-container" id="pipeContainer">
         <div class="pipe-joint"></div>
         <div class="pipe-joint"></div>
         <div class="fluid" id="fluidAnimation"></div>
     </div>
 
+    <div class="plane-container" id="planeContainer">
+        <div class="plane"></div>
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+    </div>
+
     <script>
-        function calcular() {
-            // Protótipo
-            const diametroPrototipo = parseFloat(document.getElementById('diametroPrototipo').value);
-            const gravidadeEspecifica = parseFloat(document.getElementById('gravidadeEspecifica').value);
-            const viscosidadeFluido = parseFloat(document.getElementById('viscosidadeFluido').value);
-            const taxaFluxo = parseFloat(document.getElementById('taxaFluxo').value);
+        function toggleFields() {
+            const tipoAnalise = document.getElementById('tipoAnalise').value;
+            const analise1 = document.getElementById('analise1');
+            const analise2 = document.getElementById('analise2');
+            const modeloAnalise1 = document.getElementById('modeloAnalise1');
+            const modeloAnalise2 = document.getElementById('modeloAnalise2');
+            const resultadosAnalise1 = document.getElementById('resultadosAnalise1');
+            const resultadosAnalise2 = document.getElementById('resultadosAnalise2');
+            const pipeContainer = document.getElementById('pipeContainer');
+            const planeContainer = document.getElementById('planeContainer');
 
-            // Modelo
-            const diametroModelo = parseFloat(document.getElementById('diametroModelo').value);
-
-            // Verificação de campos vazios
-            if (isNaN(diametroPrototipo) || isNaN(gravidadeEspecifica) || isNaN(viscosidadeFluido) || isNaN(taxaFluxo) || isNaN(diametroModelo)) {
-                alert('Por favor, preencha todos os campos.');
-                return;
+            if (tipoAnalise == '1') {
+                analise1.style.display = 'block';
+                analise2.style.display = 'none';
+                modeloAnalise1.style.display = 'block';
+                modeloAnalise2.style.display = 'none';
+                resultadosAnalise1.style.display = 'block';
+                resultadosAnalise2.style.display = 'none';
+                pipeContainer.style.display = 'block';
+                planeContainer.style.display = 'none';
+            } else {
+                analise1.style.display = 'none';
+                analise2.style.display = 'block';
+                modeloAnalise1.style.display = 'none';
+                modeloAnalise2.style.display = 'block';
+                resultadosAnalise1.style.display = 'none';
+                resultadosAnalise2.style.display = 'block';
+                pipeContainer.style.display = 'none';
+                planeContainer.style.display = 'block';
             }
+        }
 
-            // Constantes
-            const densidadeOleo = gravidadeEspecifica * 1000; // kg/m³
-            const densidadeAgua = 1000; // kg/m³
-            const viscosidadeAgua = 0.01; // poise
+        function calcular() {
+            const tipoAnalise = document.getElementById('tipoAnalise').value;
 
-            // Cálculos
-            const velocidadePrototipo = (taxaFluxo / 1000) / ((Math.PI / 4) * Math.pow(diametroPrototipo, 2)); // m/s
-            const velocidadeModelo = (densidadeOleo * velocidadePrototipo * diametroPrototipo * viscosidadeAgua) /
-                (densidadeAgua * diametroModelo * viscosidadeFluido);
-            const areaSecaoModelo = (Math.PI / 4) * Math.pow(diametroModelo, 2);
-            const taxaFluxoModelo = velocidadeModelo * areaSecaoModelo; // m³/s
+            if (tipoAnalise == '1') {
+                // Protótipo
+                const diametroPrototipo = parseFloat(document.getElementById('diametroPrototipo').value);
+                const gravidadeEspecifica = parseFloat(document.getElementById('gravidadeEspecifica').value);
+                const viscosidadeFluido = parseFloat(document.getElementById('viscosidadeFluido').value);
+                const taxaFluxo = parseFloat(document.getElementById('taxaFluxo').value);
 
-            // Exibindo os resultados
-            document.getElementById('velocidadePrototipo').textContent = velocidadePrototipo.toFixed(4);
-            document.getElementById('velocidadeModelo').textContent = velocidadeModelo.toFixed(4);
-            document.getElementById('taxaFluxoModeloLitros').textContent = (taxaFluxoModelo * 1000).toFixed(4);
+                // Modelo
+                const diametroModelo = parseFloat(document.getElementById('diametroModelo').value);
 
-            // Tornar os resultados visíveis
-            document.querySelectorAll('.result-value').forEach(element => {
-                element.style.display = 'inline-block';
-            });
+                // Verificação de campos vazios
+                if (isNaN(diametroPrototipo) || isNaN(gravidadeEspecifica) || isNaN(viscosidadeFluido) || isNaN(taxaFluxo) || isNaN(diametroModelo)) {
+                    alert('Por favor, preencha todos os campos.');
+                    return;
+                }
 
-            // Ajustar a velocidade da animação do fluido
-            const fluidAnimation = document.getElementById('fluidAnimation');
-            const animationDuration = 5 / velocidadeModelo; // Ajustar a duração da animação com base na velocidade do modelo
-            fluidAnimation.style.animationDuration = `${animationDuration}s`;
-            fluidAnimation.classList.add('flow');
+                // Constantes
+                const densidadeOleo = gravidadeEspecifica * 1000; // kg/m³
+                const densidadeAgua = 1000; // kg/m³
+                const viscosidadeAgua = 0.01; // poise
+
+                // Cálculos
+                const velocidadePrototipo = (taxaFluxo / 1000) / ((Math.PI / 4) * Math.pow(diametroPrototipo, 2)); // m/s
+                const velocidadeModelo = (densidadeOleo * velocidadePrototipo * diametroPrototipo * viscosidadeAgua) /
+                    (densidadeAgua * diametroModelo * viscosidadeFluido);
+                const areaSecaoModelo = (Math.PI / 4) * Math.pow(diametroModelo, 2);
+                const taxaFluxoModelo = velocidadeModelo * areaSecaoModelo; // m³/s
+
+                // Exibindo os resultados
+                document.getElementById('velocidadePrototipo').textContent = velocidadePrototipo.toFixed(4);
+                document.getElementById('velocidadeModelo').textContent = velocidadeModelo.toFixed(4);
+                document.getElementById('taxaFluxoModeloLitros').textContent = (taxaFluxoModelo * 1000).toFixed(4);
+
+                // Tornar os resultados visíveis
+                document.querySelectorAll('.result-value').forEach(element => {
+                    element.style.display = 'inline-block';
+                });
+
+                // Ajustar a velocidade da animação do fluido
+                const fluidAnimation = document.getElementById('fluidAnimation');
+                const animationDuration = 5 / velocidadeModelo; // Ajustar a duração da animação com base na velocidade do modelo
+                fluidAnimation.style.animationDuration = `${animationDuration}s`;
+                fluidAnimation.classList.add('flow');
+            } else if (tipoAnalise == '2') {
+                // Protótipo
+                const viscosidadePrototipo = parseFloat(document.getElementById('viscosidadePrototipo').value);
+                const densidadePrototipo = parseFloat(document.getElementById('densidadePrototipo').value);
+                const quedaPressaoModelo = parseFloat(document.getElementById('quedaPressaoModelo').value);
+                const razaoEscala = parseFloat(document.getElementById('razaoEscala').value);
+
+                // Verificação de campos vazios
+                if (isNaN(viscosidadePrototipo) || isNaN(densidadePrototipo) || isNaN(quedaPressaoModelo) || isNaN(razaoEscala)) {
+                    alert('Por favor, preencha todos os campos.');
+                    return;
+                }
+
+                // Constantes
+                const densidadeAgua = 1000; // kg/m³
+                const viscosidadeAgua = 0.01; // poise
+
+                // Cálculos
+                const Vr = (razaoEscala * densidadePrototipo * viscosidadeAgua) / (densidadeAgua * viscosidadePrototipo);
+                const Pp = (quedaPressaoModelo * densidadePrototipo) / (densidadeAgua * Vr ** 2);
+
+                // Exibindo os resultados
+                document.getElementById('quedaPressaoPrototipo').textContent = Pp.toFixed(4);
+
+                // Tornar os resultados visíveis
+                document.querySelectorAll('.result-value').forEach(element => {
+                    element.style.display = 'inline-block';
+                });
+
+                // Iniciar animação do avião
+                document.querySelector('.plane').classList.add('fly');
+                document.querySelectorAll('.cloud').forEach(cloud => {
+                    cloud.classList.add('stream');
+                });
+            }
         }
 
         function limpar() {
@@ -354,6 +540,12 @@
                 element.style.display = 'inline-block';
             });
             document.getElementById('fluidAnimation').classList.remove('flow');
+
+            // Parar animação do avião
+            document.querySelector('.plane').classList.remove('fly');
+            document.querySelectorAll('.cloud').forEach(cloud => {
+                cloud.classList.remove('stream');
+            });
         }
     </script>
 </body>
